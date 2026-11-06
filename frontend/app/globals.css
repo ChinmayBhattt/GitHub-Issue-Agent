@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-cream: #FAF9F5;
+  --bg-cream-card: #FFFFFF;
+  --bg-cream-soft: #F5F3EC;
+  --text-charcoal: #141413;
+  --text-charcoal-muted: #636159;
+  --border-beige: #E8E6DC;
+}
+
+body {
+  background-color: #FAF9F5;
+  color: #141413;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Elegant editorial headings */
+h1, h2, h3, .font-editorial {
+  font-family: 'Newsreader', ui-serif, Georgia, Cambria, 'Times New Roman', serif;
+}
+
+/* Metallic Black Buttons */
+.btn-metallic {
+  background: linear-gradient(180deg, #2A2A28 0%, #161615 100%);
+  border: 1px solid #3A3935;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: #FAF9F5;
+  transition: all 0.15s ease-out;
+}
+
+.btn-metallic:hover {
+  background: linear-gradient(180deg, #343431 0%, #1E1E1D 100%);
+  border-color: #4D4C47;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  color: #FFFFFF;
+}
+
+.btn-metallic:active {
+  background: #141413;
+  transform: scale(0.98);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Custom warm scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF9F5;
+}
+::-webkit-scrollbar-thumb {
+  background: #D6D3C8;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B8B6AD;
+}
+
+::selection {
+  background-color: #E8E6DC;
+  color: #141413;
+}
