@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 import { DiffViewer } from "@/components/DiffViewer";
 import { ExecutionLogs } from "@/components/ExecutionLogs";
 import { TestResultsView } from "@/components/TestResultsView";
@@ -278,6 +279,7 @@ export default function JobDetailPage() {
           </div>
         </div>
       </main>
+      <Footer className="mt-12" />
     </>
   );
 }

@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Navbar } from "../../components/Navbar";
+import { Footer } from "../../components/Footer";
 import {
   BookOpen,
   Terminal,
@@ -615,14 +616,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8000`}
         </div>
 
         {/* Footer */}
-        <footer className="border-t border-beige py-8 bg-cream text-center text-xs font-sans text-charcoal-muted mt-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-1">
-            <p className="font-serif text-charcoal text-sm">ZORVEX Autonomous Engineering Platform Documentation</p>
-            <p className="text-[11px] text-charcoal-light">
-              Built with Google Gemini & LangGraph • Anthropic Editorial Design • Strictly Never Merges PRs Automatically
-            </p>
-          </div>
-        </footer>
+        <Footer className="mt-12" />
       </div>
     </>
   );

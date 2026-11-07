@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 import { api, ConnectedRepo } from "@/services/api";
 import { FolderGit2, Link as LinkIcon, PlusCircle, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 
@@ -158,6 +159,7 @@ export default function ReposPage() {
           </ul>
         </div>
       </main>
+      <Footer className="mt-12" />
     </>
   );
 }

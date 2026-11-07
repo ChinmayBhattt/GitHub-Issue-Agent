@@ -6,6 +6,7 @@ import { StatsOverview } from "../../components/StatsOverview";
 import { JobList } from "../../components/JobList";
 import { IssueSubmissionModal } from "../../components/IssueSubmissionModal";
 import { WebTerminal } from "../../components/WebTerminal";
+import { Footer } from "../../components/Footer";
 import { api, DashboardStats, Job, KeyConfigData } from "../../services/api";
 import { PlusCircle, RefreshCw, ArrowLeft, BookOpen, Terminal, Key, AlertTriangle } from "lucide-react";
 import Link from "next/link";
@@ -194,14 +195,7 @@ function DashboardContent() {
         </section>
       </main>
 
-      <footer className="border-t border-beige py-8 bg-cream text-center text-xs font-sans text-charcoal-muted">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-1">
-          <p className="font-serif text-charcoal text-sm">ZORVEX — Autonomous AI Engineering Platform</p>
-          <p className="text-[11px] text-charcoal-light">
-            Powered by Google Gemini & LangGraph • Built with an Anthropic-inspired editorial aesthetic • Strictly Never Merges PRs Automatically
-          </p>
-        </div>
-      </footer>
+      <Footer />
 
       <IssueSubmissionModal
         isOpen={modalOpen}

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
 import { api, DashboardStats } from "../services/api";
 import {
   Sparkles,
@@ -814,23 +815,7 @@ curl -X POST "http://localhost:8000/api/jobs" \\
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-beige py-10 bg-cream text-center text-xs font-sans text-charcoal-muted">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
-          <p className="font-serif text-charcoal text-base">ZORVEX — Autonomous AI Engineering Platform</p>
-          <p className="text-xs text-charcoal-light max-w-2xl mx-auto">
-            Powered by Google Gemini 2.5 Flash &amp; LangGraph • Designed with Anthropic Editorial Warm Ivory Aesthetics • Strictly Never Auto-Merges Pull Requests
-          </p>
-          <div className="pt-3 flex items-center justify-center space-x-6 text-xs text-charcoal-secondary font-sans">
-            <Link href="/dashboard" className="hover:text-charcoal transition-colors">Dashboard</Link>
-            <span>•</span>
-            <Link href="/docs" className="hover:text-charcoal transition-colors">Documentation</Link>
-            <span>•</span>
-            <Link href="/repos" className="hover:text-charcoal transition-colors">Repositories</Link>
-            <span>•</span>
-            <Link href="/pull-requests" className="hover:text-charcoal transition-colors">Pull Requests</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 import { api, PullRequest } from "@/services/api";
 import { ExternalLink, GitBranch, GitPullRequest, ShieldAlert } from "lucide-react";
 
@@ -112,6 +113,7 @@ export default function PullRequestsPage() {
           </div>
         </div>
       </main>
+      <Footer className="mt-12" />
     </>
   );
 }
