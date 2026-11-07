@@ -93,3 +93,4 @@ export const Footer: React.FC<FooterProps> = ({ showNav = true, className = "" }
 };
 
 export default Footer;
+
