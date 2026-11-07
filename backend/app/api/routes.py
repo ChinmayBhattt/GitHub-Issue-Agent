@@ -1,5 +1,7 @@
 """FastAPI API route handlers for issue analysis, resolution, jobs, and webhooks."""
-from typing import Any, Dict, List
+import os
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request, status
 from app.agents.issue_analyzer import issue_analyzer
 from app.agents.issue_detector import issue_detector
@@ -8,6 +10,8 @@ from app.api.schemas import (
     IssueAnalyzeRequest,
     IssueResolveRequest,
     JobResponse,
+    KeyConfigRequest,
+    KeyConfigResponse,
     LogEntry,
     RejectRequest,
     RepoConnectRequest,
@@ -16,22 +20,171 @@ from app.config.settings import settings
 from app.github.client import github_client
 from app.github.webhooks import webhook_handler
 from app.services.job_runner import job_runner
+from app.services.llm import llm_service
 from app.storage.json_store import json_store
 
 router = APIRouter()
 
 
+def _get_key_preview(val: Optional[str]) -> Optional[str]:
+    if not val:
+        return None
+    val = val.strip()
+    if len(val) <= 8:
+        return "••••••••"
+    return f"{val[:6]}••••{val[-4:]}"
+
+
+def _update_env_file(filepath: Path, updates: Dict[str, str]):
+    lines = []
+    if filepath.exists():
+        try:
+            with open(filepath, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+        except Exception:
+            lines = []
+
+    existing_keys = set()
+    new_lines = []
+    for line in lines:
+        stripped = line.strip()
+        if stripped and not stripped.startswith("#") and "=" in stripped:
+            key = stripped.split("=", 1)[0].strip()
+            if key in updates:
+                new_lines.append(f"{key}={updates[key]}\n")
+                existing_keys.add(key)
+                continue
+        new_lines.append(line)
+
+    for k, v in updates.items():
+        if k not in existing_keys:
+            new_lines.append(f"{k}={v}\n")
+
+    try:
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.writelines(new_lines)
+    except Exception:
+        pass
+
+
 @router.get("/health", response_model=HealthResponse)
+@router.get("/api/health", response_model=HealthResponse)
 def get_health() -> HealthResponse:
     """System health check and dashboard stats."""
     stats = json_store.get_stats()
+    gemini_key = os.getenv("GEMINI_API_KEY") or getattr(llm_service, "api_key", "") or settings.GEMINI_API_KEY
+    github_tok = github_client.token or os.getenv("GITHUB_TOKEN") or settings.GITHUB_TOKEN
     return HealthResponse(
         status="ok",
         version="0.1.0",
         stats=stats,
-        gemini_configured=bool(settings.GEMINI_API_KEY),
-        github_token_configured=bool(settings.GITHUB_TOKEN),
+        gemini_configured=bool(gemini_key),
+        github_token_configured=bool(github_tok),
     )
+
+
+@router.get("/api/config/keys", response_model=KeyConfigResponse)
+def get_keys_config() -> KeyConfigResponse:
+    """Check configuration status of required API keys."""
+    gemini_key = os.getenv("GEMINI_API_KEY") or getattr(llm_service, "api_key", "") or settings.GEMINI_API_KEY or ""
+    gh_token = github_client.token or os.getenv("GITHUB_TOKEN") or settings.GITHUB_TOKEN or ""
+    webhook_sec = os.getenv("GITHUB_WEBHOOK_SECRET") or settings.GITHUB_WEBHOOK_SECRET or ""
+
+    return KeyConfigResponse(
+        status="ok",
+        gemini_api_key_configured=bool(gemini_key),
+        gemini_api_key_preview=_get_key_preview(gemini_key),
+        github_token_configured=bool(gh_token),
+        github_token_preview=_get_key_preview(gh_token),
+        github_webhook_secret_configured=bool(webhook_sec),
+        github_webhook_secret_preview=_get_key_preview(webhook_sec),
+    )
+
+
+@router.post("/api/config/keys", response_model=KeyConfigResponse)
+def save_keys_config(req: KeyConfigRequest) -> KeyConfigResponse:
+    """Save or update API keys dynamically from the web terminal."""
+    updates: Dict[str, str] = {}
+    if req.gemini_api_key is not None and req.gemini_api_key.strip():
+        k = req.gemini_api_key.strip()
+        updates["GEMINI_API_KEY"] = k
+        os.environ["GEMINI_API_KEY"] = k
+        settings.GEMINI_API_KEY = k
+        llm_service._client = None
+        llm_service._last_key = None
+        llm_service.api_key = k
+
+    if req.github_token is not None and req.github_token.strip():
+        tok = req.github_token.strip()
+        updates["GITHUB_TOKEN"] = tok
+        os.environ["GITHUB_TOKEN"] = tok
+        settings.GITHUB_TOKEN = tok
+        github_client._gh = None
+        github_client._last_token = None
+        github_client._custom_token = tok
+
+    if req.github_webhook_secret is not None:
+        sec = req.github_webhook_secret.strip()
+        updates["GITHUB_WEBHOOK_SECRET"] = sec
+        os.environ["GITHUB_WEBHOOK_SECRET"] = sec
+        settings.GITHUB_WEBHOOK_SECRET = sec
+
+    # Persist to both backend/.env and root .env
+    for env_path in [settings.BASE_DIR / ".env", settings.BASE_DIR.parent / ".env", Path(".env")]:
+        _update_env_file(env_path, updates)
+
+    gemini_key = os.getenv("GEMINI_API_KEY") or getattr(llm_service, "api_key", "") or settings.GEMINI_API_KEY or ""
+    gh_token = github_client.token or os.getenv("GITHUB_TOKEN") or settings.GITHUB_TOKEN or ""
+    webhook_sec = os.getenv("GITHUB_WEBHOOK_SECRET") or settings.GITHUB_WEBHOOK_SECRET or ""
+
+    return KeyConfigResponse(
+        status="ok",
+        gemini_api_key_configured=bool(gemini_key),
+        gemini_api_key_preview=_get_key_preview(gemini_key),
+        github_token_configured=bool(gh_token),
+        github_token_preview=_get_key_preview(gh_token),
+        github_webhook_secret_configured=bool(webhook_sec),
+        github_webhook_secret_preview=_get_key_preview(webhook_sec),
+        message="Keys configured and saved successfully! Agents reloaded.",
+    )
+
+
+@router.post("/api/config/keys/reset", response_model=KeyConfigResponse)
+def reset_keys_config() -> KeyConfigResponse:
+    """Reset and wipe configured keys so user can re-enter fresh credentials."""
+    for k in ["GEMINI_API_KEY", "GITHUB_TOKEN", "GITHUB_WEBHOOK_SECRET"]:
+        os.environ.pop(k, None)
+    settings.GEMINI_API_KEY = ""
+    settings.GITHUB_TOKEN = ""
+    settings.GITHUB_WEBHOOK_SECRET = ""
+
+    llm_service._client = None
+    llm_service._last_key = None
+    llm_service.api_key = ""
+
+    github_client._gh = None
+    github_client._last_token = None
+    github_client._custom_token = None
+
+    updates = {
+        "GEMINI_API_KEY": "",
+        "GITHUB_TOKEN": "",
+        "GITHUB_WEBHOOK_SECRET": "",
+    }
+    for env_path in [settings.BASE_DIR / ".env", settings.BASE_DIR.parent / ".env", Path(".env")]:
+        _update_env_file(env_path, updates)
+
+    return KeyConfigResponse(
+        status="ok",
+        gemini_api_key_configured=False,
+        gemini_api_key_preview=None,
+        github_token_configured=False,
+        github_token_preview=None,
+        github_webhook_secret_configured=False,
+        github_webhook_secret_preview=None,
+        message="All credentials have been cleared and reset.",
+    )
+
 
 
 @router.post("/api/issues/analyze")

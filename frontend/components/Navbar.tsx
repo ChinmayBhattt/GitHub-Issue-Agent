@@ -2,14 +2,15 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { GitPullRequest, FolderGit2, Activity, PlusCircle, Sparkles, BookOpen } from "lucide-react";
+import { GitPullRequest, FolderGit2, Activity, PlusCircle, Sparkles, BookOpen, Terminal } from "lucide-react";
 import { api, HealthData } from "../services/api";
 
 interface NavbarProps {
   onOpenNewIssue?: () => void;
+  onOpenTerminal?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenNewIssue }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onOpenNewIssue, onOpenTerminal }) => {
   const [health, setHealth] = useState<HealthData | null>(null);
   const pathname = usePathname();
 
@@ -81,6 +82,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenNewIssue }) => {
               <span className="w-1.5 h-1.5 rounded-full bg-ochre animate-pulse"></span>
               <span>Connecting...</span>
             </div>
+          )}
+
+          {onOpenTerminal && (
+            <button
+              onClick={onOpenTerminal}
+              title="Open Terminal & Key Manager"
+              className="px-2.5 py-1.5 rounded-lg border border-beige hover:border-beige-strong bg-cream-soft/60 hover:bg-cream-soft text-charcoal transition-all flex items-center space-x-1.5 cursor-pointer text-xs font-mono"
+            >
+              <Terminal className="w-3.5 h-3.5 text-charcoal-muted" />
+              <span className="hidden sm:inline">Terminal</span>
+            </button>
           )}
 
           {onOpenNewIssue ? (

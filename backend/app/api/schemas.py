@@ -64,3 +64,21 @@ class HealthResponse(BaseModel):
     gemini_configured: bool
     github_token_configured: bool
 
+
+class KeyConfigRequest(BaseModel):
+    gemini_api_key: Optional[str] = Field(default=None, description="Google Gemini API Key")
+    github_token: Optional[str] = Field(default=None, description="GitHub Personal Access Token or App Token")
+    github_webhook_secret: Optional[str] = Field(default=None, description="GitHub Webhook Secret")
+
+
+class KeyConfigResponse(BaseModel):
+    status: str
+    gemini_api_key_configured: bool
+    gemini_api_key_preview: Optional[str] = None
+    github_token_configured: bool
+    github_token_preview: Optional[str] = None
+    github_webhook_secret_configured: bool
+    github_webhook_secret_preview: Optional[str] = None
+    message: Optional[str] = None
+
+

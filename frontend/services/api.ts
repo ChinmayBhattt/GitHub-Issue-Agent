@@ -20,6 +20,17 @@ export interface HealthData {
   github_token_configured: boolean;
 }
 
+export interface KeyConfigData {
+  status: string;
+  gemini_api_key_configured: boolean;
+  gemini_api_key_preview?: string;
+  github_token_configured: boolean;
+  github_token_preview?: string;
+  github_webhook_secret_configured: boolean;
+  github_webhook_secret_preview?: string;
+  message?: string;
+}
+
 export interface Job {
   job_id: string;
   status: "QUEUED" | "ANALYZING" | "INVESTIGATING" | "FIXING" | "TESTING" | "WAITING_FOR_APPROVAL" | "CREATING_PR" | "COMPLETED" | "FAILED" | "REJECTED";
@@ -194,6 +205,31 @@ export const api = {
       body: JSON.stringify({ reason: reason || "Rejected by user" }),
     });
     return handleResponse(res);
+  },
+
+  async getKeysConfig(): Promise<KeyConfigData> {
+    const res = await fetch(`${API_BASE_URL}/api/config/keys`);
+    return handleResponse<KeyConfigData>(res);
+  },
+
+  async saveKeysConfig(data: {
+    gemini_api_key?: string;
+    github_token?: string;
+    github_webhook_secret?: string;
+  }): Promise<KeyConfigData> {
+    const res = await fetch(`${API_BASE_URL}/api/config/keys`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    return handleResponse<KeyConfigData>(res);
+  },
+
+  async resetKeysConfig(): Promise<KeyConfigData> {
+    const res = await fetch(`${API_BASE_URL}/api/config/keys/reset`, {
+      method: "POST",
+    });
+    return handleResponse<KeyConfigData>(res);
   },
 };
 

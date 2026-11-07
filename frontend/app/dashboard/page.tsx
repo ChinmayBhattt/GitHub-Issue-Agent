@@ -5,8 +5,9 @@ import { Navbar } from "../../components/Navbar";
 import { StatsOverview } from "../../components/StatsOverview";
 import { JobList } from "../../components/JobList";
 import { IssueSubmissionModal } from "../../components/IssueSubmissionModal";
-import { api, DashboardStats, Job } from "../../services/api";
-import { PlusCircle, RefreshCw, ArrowLeft, BookOpen } from "lucide-react";
+import { WebTerminal } from "../../components/WebTerminal";
+import { api, DashboardStats, Job, KeyConfigData } from "../../services/api";
+import { PlusCircle, RefreshCw, ArrowLeft, BookOpen, Terminal, Key, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 
 function DashboardContent() {
@@ -20,8 +21,10 @@ function DashboardContent() {
     pull_requests_created: 0,
   });
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [keyConfig, setKeyConfig] = useState<KeyConfigData | null>(null);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [terminalOpen, setTerminalOpen] = useState(false);
 
   useEffect(() => {
     if (searchParams.get("start") === "true") {
@@ -31,15 +34,19 @@ function DashboardContent() {
 
   const loadData = async () => {
     try {
-      const [healthRes, jobsRes] = await Promise.all([
+      const [healthRes, jobsRes, keysRes] = await Promise.all([
         api.getHealth().catch(() => null),
         api.getJobs().catch(() => []),
+        api.getKeysConfig().catch(() => null),
       ]);
 
       if (healthRes?.stats) {
         setStats(healthRes.stats);
       }
       setJobs(jobsRes);
+      if (keysRes) {
+        setKeyConfig(keysRes);
+      }
     } catch {
       // Graceful fallback
     } finally {
@@ -55,7 +62,10 @@ function DashboardContent() {
 
   return (
     <>
-      <Navbar onOpenNewIssue={() => setModalOpen(true)} />
+      <Navbar
+        onOpenNewIssue={() => setModalOpen(true)}
+        onOpenTerminal={() => setTerminalOpen(true)}
+      />
 
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-10">
         {/* Navigation Breadcrumb / Hero Header */}
@@ -94,6 +104,21 @@ function DashboardContent() {
               </button>
 
               <button
+                onClick={() => setTerminalOpen(true)}
+                className="px-4 py-2.5 rounded-xl border border-beige hover:border-beige-strong bg-cream-soft/60 hover:bg-cream-soft text-charcoal font-sans text-xs sm:text-sm transition-all flex items-center space-x-1.5 cursor-pointer shadow-subtle"
+              >
+                <Terminal className="w-3.5 h-3.5 text-charcoal-muted" />
+                <span>Terminal &amp; Keys</span>
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    keyConfig?.gemini_api_key_configured && keyConfig?.github_token_configured
+                      ? "bg-sage"
+                      : "bg-ochre animate-pulse"
+                  }`}
+                ></span>
+              </button>
+
+              <button
                 onClick={loadData}
                 title="Refresh State"
                 className="px-4 py-2.5 rounded-xl border border-beige hover:border-beige-strong bg-cream-soft/60 hover:bg-cream-soft text-charcoal font-sans text-xs sm:text-sm transition-all flex items-center space-x-1.5 cursor-pointer shadow-subtle"
@@ -112,6 +137,33 @@ function DashboardContent() {
             </div>
           </div>
         </section>
+
+        {/* Credentials Notice Banner if Keys are Missing */}
+        {keyConfig && (!keyConfig.gemini_api_key_configured || !keyConfig.github_token_configured) && (
+          <div className="p-4 sm:p-5 rounded-2xl border border-ochre-border bg-ochre-light/90 shadow-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start sm:items-center space-x-3.5">
+              <div className="w-9 h-9 rounded-xl bg-ochre/15 border border-ochre-border flex items-center justify-center text-ochre flex-shrink-0">
+                <Key className="w-4 h-4" />
+              </div>
+              <div className="space-y-0.5">
+                <div className="text-sm font-serif font-medium text-charcoal">
+                  API Credentials Required to Resolve Issues
+                </div>
+                <div className="text-xs font-sans text-charcoal-secondary">
+                  Please configure your Google Gemini API Key and GitHub Token in the interactive terminal sidebar.
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setTerminalOpen(true)}
+              className="btn-metallic px-4 py-2 rounded-xl text-xs font-sans font-medium flex items-center space-x-2 flex-shrink-0 cursor-pointer shadow-subtle"
+            >
+              <Terminal className="w-3.5 h-3.5 text-cream" />
+              <span>Open Terminal &amp; Setup Keys</span>
+            </button>
+          </div>
+        )}
 
         {/* Operational Metrics */}
         <section className="space-y-3">
@@ -158,6 +210,36 @@ function DashboardContent() {
         onJobStarted={(jobId) => {
           loadData();
           router.push(`/jobs/${jobId}`);
+        }}
+      />
+
+      {/* Floating Terminal Sidebar Button */}
+      <button
+        onClick={() => setTerminalOpen(true)}
+        title="Open Terminal & Key Manager Sidebar"
+        className="fixed bottom-6 right-6 z-40 btn-metallic px-4 py-2.5 rounded-full shadow-xl flex items-center space-x-2.5 cursor-pointer hover:scale-105 transition-all group"
+      >
+        <Terminal className="w-4 h-4 text-cream" />
+        <span className="text-xs font-mono font-medium">Terminal &amp; Keys</span>
+        <span
+          className={`w-2 h-2 rounded-full ${
+            keyConfig?.gemini_api_key_configured && keyConfig?.github_token_configured
+              ? "bg-sage"
+              : "bg-ochre animate-pulse"
+          }`}
+        ></span>
+      </button>
+
+      {/* Slide-out Terminal Sidebar Drawer */}
+      <WebTerminal
+        isOpen={terminalOpen}
+        onClose={() => setTerminalOpen(false)}
+        onJobStarted={(jobId) => {
+          loadData();
+          router.push(`/jobs/${jobId}`);
+        }}
+        onKeysUpdated={() => {
+          loadData();
         }}
       />
     </>

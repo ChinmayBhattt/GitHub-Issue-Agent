@@ -81,3 +81,28 @@ def test_pull_requests_list():
     assert res.status_code == 200
     assert isinstance(res.json(), list)
 
+
+def test_keys_config_endpoints(monkeypatch):
+    """Verify GET, POST, and reset endpoints for credentials."""
+    import app.api.routes as routes_mod
+    monkeypatch.setattr(routes_mod, "_update_env_file", lambda path, updates: None)
+
+    get_res = client.get("/api/config/keys")
+    assert get_res.status_code == 200
+    assert "gemini_api_key_configured" in get_res.json()
+
+    save_res = client.post("/api/config/keys", json={
+        "gemini_api_key": "AIzaSyTestKey1234567890",
+        "github_token": "ghp_TestToken1234567890",
+    })
+    assert save_res.status_code == 200
+    saved_data = save_res.json()
+    assert saved_data["gemini_api_key_configured"] is True
+    assert "AIzaSy" in (saved_data["gemini_api_key_preview"] or "")
+
+    reset_res = client.post("/api/config/keys/reset")
+    assert reset_res.status_code == 200
+    assert reset_res.json()["gemini_api_key_configured"] is False
+
+
+
