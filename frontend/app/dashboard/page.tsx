@@ -110,11 +110,10 @@ function DashboardContent() {
                 <Terminal className="w-3.5 h-3.5 text-charcoal-muted" />
                 <span>Terminal &amp; Keys</span>
                 <span
-                  className={`w-2 h-2 rounded-full ${
-                    keyConfig?.gemini_api_key_configured && keyConfig?.github_token_configured
-                      ? "bg-sage"
-                      : "bg-ochre animate-pulse"
-                  }`}
+                  className={`w-2 h-2 rounded-full ${keyConfig?.gemini_api_key_configured && keyConfig?.github_token_configured
+                    ? "bg-sage"
+                    : "bg-ochre animate-pulse"
+                    }`}
                 ></span>
               </button>
 
@@ -197,7 +196,7 @@ function DashboardContent() {
 
       <footer className="border-t border-beige py-8 bg-cream text-center text-xs font-sans text-charcoal-muted">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-1">
-          <p className="font-serif text-charcoal text-sm">Autonomous GitHub Issue Agent</p>
+          <p className="font-serif text-charcoal text-sm">ZORVEX — Autonomous AI Engineering Platform</p>
           <p className="text-[11px] text-charcoal-light">
             Powered by Google Gemini & LangGraph • Built with an Anthropic-inspired editorial aesthetic • Strictly Never Merges PRs Automatically
           </p>
@@ -222,11 +221,10 @@ function DashboardContent() {
         <Terminal className="w-4 h-4 text-cream" />
         <span className="text-xs font-mono font-medium">Terminal &amp; Keys</span>
         <span
-          className={`w-2 h-2 rounded-full ${
-            keyConfig?.gemini_api_key_configured && keyConfig?.github_token_configured
-              ? "bg-sage"
-              : "bg-ochre animate-pulse"
-          }`}
+          className={`w-2 h-2 rounded-full ${keyConfig?.gemini_api_key_configured && keyConfig?.github_token_configured
+            ? "bg-sage"
+            : "bg-ochre animate-pulse"
+            }`}
         ></span>
       </button>
 

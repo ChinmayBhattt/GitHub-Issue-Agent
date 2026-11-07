@@ -72,7 +72,7 @@ class GitOps:
             raise GitOpsError(f"Failed to clone repository '{repo_url}': {str(e)}")
 
         # Configure local git user
-        self._run_git(job_id, ["config", "user.name", "GitHub Issue Agent"])
+        self._run_git(job_id, ["config", "user.name", "ZORVEX Agent"])
         self._run_git(job_id, ["config", "user.email", "agent@antigravity.ai"])
 
     def get_current_branch(self, job_id: str) -> str:

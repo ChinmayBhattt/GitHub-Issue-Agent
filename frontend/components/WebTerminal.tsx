@@ -102,7 +102,7 @@ export const WebTerminal: React.FC<WebTerminalProps> = ({
       if (initial) {
         setLines([]);
         addLine("system", "=============================================================");
-        addLine("system", "  GitHub Issue Agent — Interactive Web Terminal Console");
+        addLine("system", "  ZORVEX — Interactive Web Terminal Console");
         addLine("system", "  Version 0.1.0 • Autonomous AI Engineering Engine");
         addLine("system", "=============================================================");
 
@@ -389,11 +389,10 @@ export const WebTerminal: React.FC<WebTerminalProps> = ({
             {/* Status Pill */}
             <div className="flex items-center space-x-1.5 px-2 py-0.5 rounded-full bg-[#222220] border border-[#3A3935] text-[11px]">
               <span
-                className={`w-2 h-2 rounded-full ${
-                  keyConfig?.gemini_api_key_configured && keyConfig?.github_token_configured
-                    ? "bg-sage animate-pulse"
-                    : "bg-ochre animate-pulse"
-                }`}
+                className={`w-2 h-2 rounded-full ${keyConfig?.gemini_api_key_configured && keyConfig?.github_token_configured
+                  ? "bg-sage animate-pulse"
+                  : "bg-ochre animate-pulse"
+                  }`}
               ></span>
               <span className="text-[#C5C3BB]">
                 {keyConfig?.gemini_api_key_configured && keyConfig?.github_token_configured
@@ -469,8 +468,8 @@ export const WebTerminal: React.FC<WebTerminalProps> = ({
                 wizardStep === "awaiting_gemini"
                   ? "Paste your GEMINI_API_KEY here and press Enter..."
                   : wizardStep === "awaiting_github"
-                  ? "Paste your GITHUB_TOKEN here and press Enter..."
-                  : "Type command (e.g. 'status', 'configure', 'help')..."
+                    ? "Paste your GITHUB_TOKEN here and press Enter..."
+                    : "Type command (e.g. 'status', 'configure', 'help')..."
               }
               className="flex-1 bg-transparent text-[#FAF9F5] outline-none placeholder-[#636159] text-xs font-mono"
               autoFocus

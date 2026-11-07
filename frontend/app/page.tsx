@@ -52,7 +52,7 @@ export default function HeroLandingPage() {
       .then((res) => {
         if (res?.stats) setStats(res.stats);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // Auto-cycle simulator steps if auto-playing
@@ -330,11 +330,10 @@ curl -X POST "http://localhost:8000/api/jobs" \\
               <div className="flex items-center space-x-3">
                 <button
                   onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-sans font-medium border flex items-center space-x-1.5 transition-all cursor-pointer ${
-                    isAutoPlaying
-                      ? "bg-sage-light border-sage text-sage"
-                      : "bg-cream-soft border-beige text-charcoal hover:bg-cream-subtle"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-sans font-medium border flex items-center space-x-1.5 transition-all cursor-pointer ${isAutoPlaying
+                    ? "bg-sage-light border-sage text-sage"
+                    : "bg-cream-soft border-beige text-charcoal hover:bg-cream-subtle"
+                    }`}
                 >
                   <Play className={`w-3 h-3 ${isAutoPlaying ? "fill-current" : ""}`} />
                   <span>{isAutoPlaying ? "Auto-Playing (4s)" : "Auto-Play Simulator"}</span>
@@ -360,11 +359,10 @@ curl -X POST "http://localhost:8000/api/jobs" \\
                       setActiveStepIndex(idx);
                       setIsAutoPlaying(false);
                     }}
-                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer relative ${
-                      isActive
-                        ? "bg-[#1C1B1A] border-[#3A3935] text-[#FAF9F5] shadow-sm transform -translate-y-0.5"
-                        : "bg-cream/40 border-beige text-charcoal hover:bg-cream-soft hover:border-beige-strong"
-                    }`}
+                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer relative ${isActive
+                      ? "bg-[#1C1B1A] border-[#3A3935] text-[#FAF9F5] shadow-sm transform -translate-y-0.5"
+                      : "bg-cream/40 border-beige text-charcoal hover:bg-cream-soft hover:border-beige-strong"
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className={`font-mono text-[10px] font-bold ${isActive ? "text-cream-muted" : "text-charcoal-light"}`}>
@@ -497,7 +495,7 @@ curl -X POST "http://localhost:8000/api/jobs" \\
               Specialized Multi-Agent Ecosystem
             </h2>
             <p className="font-sans text-sm sm:text-base text-charcoal-secondary">
-              Rather than relying on a single monolith prompt, GitHub Issue Agent separates cognitive responsibilities across specialized, deterministic agents wired together using a compiled LangGraph state machine.
+              Rather than relying on a single monolith prompt, ZORVEX separates cognitive responsibilities across specialized, deterministic agents wired together using a compiled LangGraph state machine.
             </p>
           </div>
 
@@ -655,11 +653,10 @@ curl -X POST "http://localhost:8000/api/jobs" \\
                   <button
                     key={tab.id}
                     onClick={() => setActiveCodeTab(tab.id as any)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer ${
-                      activeCodeTab === tab.id
-                        ? "bg-white text-charcoal shadow-subtle border border-beige"
-                        : "text-charcoal-muted hover:text-charcoal"
-                    }`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer ${activeCodeTab === tab.id
+                      ? "bg-white text-charcoal shadow-subtle border border-beige"
+                      : "text-charcoal-muted hover:text-charcoal"
+                      }`}
                   >
                     {tab.label}
                   </button>
@@ -697,7 +694,7 @@ curl -X POST "http://localhost:8000/api/jobs" \\
                 Design Principles
               </span>
               <h2 className="font-serif text-2xl sm:text-3xl text-charcoal font-medium">
-                Traditional AI Scripting vs. GitHub Issue Agent
+                Traditional AI Scripting vs. ZORVEX
               </h2>
             </div>
 
@@ -719,7 +716,7 @@ curl -X POST "http://localhost:8000/api/jobs" \\
               <div className="p-6 rounded-xl border border-beige bg-cream-soft/60 space-y-3">
                 <div className="font-serif text-base font-medium text-sage flex items-center space-x-2">
                   <CheckCircle2 className="w-4 h-4 text-sage" />
-                  <span>GitHub Issue Agent (Antigravity Architecture)</span>
+                  <span>ZORVEX (Autonomous Engineering Platform)</span>
                 </div>
                 <ul className="space-y-2 text-charcoal-secondary text-xs leading-relaxed">
                   <li>✅ Parses AST symbols &amp; verifies culprit files actually exist in repository.</li>
@@ -762,9 +759,8 @@ curl -X POST "http://localhost:8000/api/jobs" \\
                       {item.q}
                     </span>
                     <ChevronDown
-                      className={`w-4 h-4 text-charcoal-muted transition-transform duration-200 flex-shrink-0 ml-4 ${
-                        isOpen ? "transform rotate-180" : ""
-                      }`}
+                      className={`w-4 h-4 text-charcoal-muted transition-transform duration-200 flex-shrink-0 ml-4 ${isOpen ? "transform rotate-180" : ""
+                        }`}
                     />
                   </button>
                   {isOpen && (
@@ -820,7 +816,7 @@ curl -X POST "http://localhost:8000/api/jobs" \\
       {/* Footer */}
       <footer className="border-t border-beige py-10 bg-cream text-center text-xs font-sans text-charcoal-muted">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
-          <p className="font-serif text-charcoal text-base">Autonomous GitHub Issue Agent</p>
+          <p className="font-serif text-charcoal text-base">ZORVEX — Autonomous AI Engineering Platform</p>
           <p className="text-xs text-charcoal-light max-w-2xl mx-auto">
             Powered by Google Gemini 2.5 Flash &amp; LangGraph • Designed with Anthropic Editorial Warm Ivory Aesthetics • Strictly Never Auto-Merges Pull Requests
           </p>

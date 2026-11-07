@@ -38,7 +38,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenNewIssue, onOpenTerminal }
             </div>
             <div className="flex items-baseline space-x-2">
               <span className="font-serif text-xl font-medium tracking-tight text-charcoal">
-                GitHub Issue Agent
+                ZORVEX
               </span>
               <span className="hidden sm:inline-block text-[11px] font-sans font-medium px-2 py-0.5 rounded-full bg-cream-soft text-charcoal-muted border border-beige">
                 Autonomous
@@ -56,11 +56,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenNewIssue, onOpenTerminal }
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`flex items-center space-x-1.5 py-1 transition-colors ${
-                    isActive
-                      ? "text-charcoal font-medium"
-                      : "text-charcoal-muted hover:text-charcoal"
-                  }`}
+                  className={`flex items-center space-x-1.5 py-1 transition-colors ${isActive
+                    ? "text-charcoal font-medium"
+                    : "text-charcoal-muted hover:text-charcoal"
+                    }`}
                 >
                   <Icon className={`w-4 h-4 ${isActive ? "text-charcoal" : "text-charcoal-light"}`} />
                   <span>{link.label}</span>

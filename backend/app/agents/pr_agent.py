@@ -89,7 +89,7 @@ class PRAgent:
             body=(
                 f"{pr_details.body}\n\n"
                 f"---\n"
-                f"**Automated PR created by [GitHub Issue Agent](https://github.com/agent).**\n"
+                f"**Automated PR created by [ZORVEX](https://github.com/agent).**\n"
                 f"🛡️ *Policy Notice: This PR will NEVER be automatically merged into the main branch.*"
             ),
             head_branch=head_ref,

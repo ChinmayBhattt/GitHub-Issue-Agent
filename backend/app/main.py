@@ -24,8 +24,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="GitHub Issue Resolution Agent API",
-    description="Autonomous AI coding agent that triages, analyzes, fixes, tests, and opens PRs for GitHub issues.",
+    title="ZORVEX API",
+    description="ZORVEX: Autonomous AI engineering platform that triages, analyzes, fixes, tests, and opens PRs for GitHub issues.",
     version="0.1.0",
     lifespan=lifespan,
 )

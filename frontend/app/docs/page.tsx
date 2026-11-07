@@ -57,10 +57,10 @@ export default function DocsPage() {
                 <span>Developer Documentation & Architecture</span>
               </div>
               <h1 className="font-serif text-3xl sm:text-4xl text-charcoal font-normal tracking-tight">
-                Autonomous GitHub Issue Agent
+                ZORVEX Architecture &amp; Guide
               </h1>
               <p className="text-sm sm:text-base text-charcoal-secondary font-sans max-w-2xl">
-                Comprehensive guide to configuring, operating, and extending the multi-agent code resolution pipeline powered by Google Gemini and LangGraph.
+                Comprehensive guide to configuring, operating, and extending ZORVEX — the autonomous multi-agent code resolution pipeline powered by Google Gemini and LangGraph.
               </p>
             </div>
 
@@ -96,11 +96,10 @@ export default function DocsPage() {
                         const el = document.getElementById(sec.id);
                         if (el) el.scrollIntoView({ behavior: "smooth" });
                       }}
-                      className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-sans transition-all text-left ${
-                        isActive
-                          ? "bg-cream-soft font-medium text-charcoal border border-beige"
-                          : "text-charcoal-muted hover:text-charcoal hover:bg-cream-soft/40"
-                      }`}
+                      className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-sans transition-all text-left ${isActive
+                        ? "bg-cream-soft font-medium text-charcoal border border-beige"
+                        : "text-charcoal-muted hover:text-charcoal hover:bg-cream-soft/40"
+                        }`}
                     >
                       <Icon className={`w-4 h-4 ${isActive ? "text-charcoal" : "text-charcoal-light"}`} />
                       <span>{sec.label}</span>
@@ -142,12 +141,12 @@ export default function DocsPage() {
               <div className="space-y-2">
                 <span className="text-xs font-sans text-charcoal-light uppercase tracking-wider font-semibold">Architecture & Core Mission</span>
                 <h2 className="font-serif text-2xl sm:text-3xl text-charcoal font-medium">
-                  What is GitHub Issue Agent?
+                  What is ZORVEX?
                 </h2>
               </div>
 
               <p className="font-sans text-sm sm:text-base text-charcoal-secondary leading-relaxed">
-                GitHub Issue Agent is an enterprise-grade autonomous engineering agent designed to investigate, trace, and repair issues in <strong>any public or private GitHub repository</strong>. It orchestrates Google Gemini models and LangGraph to emulate a senior software engineer’s investigation loop:
+                ZORVEX is an enterprise-grade autonomous engineering agent designed to investigate, trace, and repair issues in <strong>any public or private GitHub repository</strong>. It orchestrates Google Gemini models and LangGraph to emulate a senior software engineer’s investigation loop:
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
@@ -557,9 +556,8 @@ NEXT_PUBLIC_API_URL=http://localhost:8000`}
                 ].map((ep) => (
                   <div key={ep.path} className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl border border-beige bg-cream/20 gap-2">
                     <div className="flex items-center space-x-2.5">
-                      <span className={`px-2 py-0.5 rounded font-mono font-bold text-[11px] ${
-                        ep.method === "GET" ? "bg-sage-light text-sage border border-sage-border" : "bg-ochre-light text-ochre border border-ochre-border"
-                      }`}>
+                      <span className={`px-2 py-0.5 rounded font-mono font-bold text-[11px] ${ep.method === "GET" ? "bg-sage-light text-sage border border-sage-border" : "bg-ochre-light text-ochre border border-ochre-border"
+                        }`}>
                         {ep.method}
                       </span>
                       <span className="font-mono text-charcoal font-medium">{ep.path}</span>
@@ -619,7 +617,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8000`}
         {/* Footer */}
         <footer className="border-t border-beige py-8 bg-cream text-center text-xs font-sans text-charcoal-muted mt-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-1">
-            <p className="font-serif text-charcoal text-sm">Autonomous GitHub Issue Agent Documentation</p>
+            <p className="font-serif text-charcoal text-sm">ZORVEX Autonomous Engineering Platform Documentation</p>
             <p className="text-[11px] text-charcoal-light">
               Built with Google Gemini & LangGraph • Anthropic Editorial Design • Strictly Never Merges PRs Automatically
             </p>

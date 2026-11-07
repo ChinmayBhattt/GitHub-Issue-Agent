@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "GitHub Issue Agent — Autonomous AI Code Resolution",
-  description: "An autonomous agent that triages, analyzes, fixes, tests, and opens PRs for GitHub issues. Designed with an editorial aesthetic inspired by Anthropic.",
+  title: "ZORVEX — Autonomous AI GitHub Issue Resolution",
+  description: "ZORVEX: An autonomous engineering agent that triages, analyzes, fixes, tests, and opens PRs for GitHub issues. Powered by Gemini & LangGraph.",
 };
 
 export default function RootLayout({

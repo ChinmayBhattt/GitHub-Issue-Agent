@@ -119,6 +119,17 @@ export interface ConnectedRepo {
   connected_at: string;
 }
 
+async function safeFetch(url: string, options?: RequestInit): Promise<Response> {
+  try {
+    return await fetch(url, options);
+  } catch (err: any) {
+    if (err?.message === "Load failed" || err?.name === "TypeError") {
+      throw new Error("Backend server (port 8000) was unreachable. Please verify uvicorn is running.");
+    }
+    throw err;
+  }
+}
+
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
     let errorDetail = "API request failed";
@@ -135,37 +146,37 @@ async function handleResponse<T>(res: Response): Promise<T> {
 
 export const api = {
   async getHealth(): Promise<HealthData> {
-    const res = await fetch(`${API_BASE_URL}/health`);
+    const res = await safeFetch(`${API_BASE_URL}/health`);
     return handleResponse<HealthData>(res);
   },
 
   async getJobs(): Promise<Job[]> {
-    const res = await fetch(`${API_BASE_URL}/api/jobs`);
+    const res = await safeFetch(`${API_BASE_URL}/api/jobs`);
     return handleResponse<Job[]>(res);
   },
 
   async getJob(jobId: string): Promise<Job> {
-    const res = await fetch(`${API_BASE_URL}/api/jobs/${jobId}`);
+    const res = await safeFetch(`${API_BASE_URL}/api/jobs/${jobId}`);
     return handleResponse<Job>(res);
   },
 
   async getJobLogs(jobId: string): Promise<LogEntry[]> {
-    const res = await fetch(`${API_BASE_URL}/api/jobs/${jobId}/logs`);
+    const res = await safeFetch(`${API_BASE_URL}/api/jobs/${jobId}/logs`);
     return handleResponse<LogEntry[]>(res);
   },
 
   async getPullRequests(): Promise<PullRequest[]> {
-    const res = await fetch(`${API_BASE_URL}/api/pull-requests`);
+    const res = await safeFetch(`${API_BASE_URL}/api/pull-requests`);
     return handleResponse<PullRequest[]>(res);
   },
 
   async getRepositories(): Promise<ConnectedRepo[]> {
-    const res = await fetch(`${API_BASE_URL}/api/repositories`);
+    const res = await safeFetch(`${API_BASE_URL}/api/repositories`);
     return handleResponse<ConnectedRepo[]>(res);
   },
 
   async connectRepository(repoUrl: string): Promise<{ message: string; repository: ConnectedRepo }> {
-    const res = await fetch(`${API_BASE_URL}/api/repositories/connect`, {
+    const res = await safeFetch(`${API_BASE_URL}/api/repositories/connect`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ repo_url: repoUrl }),
@@ -174,7 +185,7 @@ export const api = {
   },
 
   async analyzeIssue(data: { repo_url: string; issue_number?: number; issue_title?: string; issue_body?: string }): Promise<any> {
-    const res = await fetch(`${API_BASE_URL}/api/issues/analyze`, {
+    const res = await safeFetch(`${API_BASE_URL}/api/issues/analyze`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -183,7 +194,7 @@ export const api = {
   },
 
   async resolveIssue(data: { repo_url: string; issue_number?: number; issue_title?: string; issue_body?: string; auto_approve?: boolean }): Promise<{ job_id: string; status: string; message: string }> {
-    const res = await fetch(`${API_BASE_URL}/api/issues/resolve`, {
+    const res = await safeFetch(`${API_BASE_URL}/api/issues/resolve`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -192,14 +203,14 @@ export const api = {
   },
 
   async approveJob(jobId: string): Promise<{ message: string; job: Job }> {
-    const res = await fetch(`${API_BASE_URL}/api/agent/approve/${jobId}`, {
+    const res = await safeFetch(`${API_BASE_URL}/api/agent/approve/${jobId}`, {
       method: "POST",
     });
     return handleResponse(res);
   },
 
   async rejectJob(jobId: string, reason?: string): Promise<{ message: string; job: Job }> {
-    const res = await fetch(`${API_BASE_URL}/api/agent/reject/${jobId}`, {
+    const res = await safeFetch(`${API_BASE_URL}/api/agent/reject/${jobId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ reason: reason || "Rejected by user" }),
@@ -208,7 +219,7 @@ export const api = {
   },
 
   async getKeysConfig(): Promise<KeyConfigData> {
-    const res = await fetch(`${API_BASE_URL}/api/config/keys`);
+    const res = await safeFetch(`${API_BASE_URL}/api/config/keys`);
     return handleResponse<KeyConfigData>(res);
   },
 
@@ -217,7 +228,7 @@ export const api = {
     github_token?: string;
     github_webhook_secret?: string;
   }): Promise<KeyConfigData> {
-    const res = await fetch(`${API_BASE_URL}/api/config/keys`, {
+    const res = await safeFetch(`${API_BASE_URL}/api/config/keys`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -226,7 +237,7 @@ export const api = {
   },
 
   async resetKeysConfig(): Promise<KeyConfigData> {
-    const res = await fetch(`${API_BASE_URL}/api/config/keys/reset`, {
+    const res = await safeFetch(`${API_BASE_URL}/api/config/keys/reset`, {
       method: "POST",
     });
     return handleResponse<KeyConfigData>(res);
