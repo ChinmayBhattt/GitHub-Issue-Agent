@@ -2,6 +2,7 @@
 import os
 import shlex
 import subprocess
+import sys
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -54,9 +55,11 @@ class SecureTestRunner:
             if k in safe_keys:
                 clean_env[k] = v
 
-        # Default fallback PATH if missing
-        if "PATH" not in clean_env:
-            clean_env["PATH"] = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+        # Prepend virtualenv bin and Python interpreter bin to PATH
+        current_path = clean_env.get("PATH", "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin")
+        venv_bin = str(settings.BASE_DIR / ".venv" / "bin")
+        py_bin = str(Path(sys.executable).parent)
+        clean_env["PATH"] = f"{venv_bin}:{py_bin}:{current_path}"
 
         clean_env["PYTHONDONTWRITEBYTECODE"] = "1"
         return clean_env

@@ -1,6 +1,7 @@
 """Gemini LLM service with structured outputs, prompt injection safeguards, and fallback handling."""
 import json
 import logging
+import os
 import re
 from typing import Any, Dict, List, Optional, Type, TypeVar
 from pydantic import BaseModel, Field
@@ -48,17 +49,39 @@ class GeminiLLMService:
         self.api_key = api_key or settings.GEMINI_API_KEY
         self.model_name = model or settings.GEMINI_MODEL
         self._client = None
+        self._last_key = None
 
-        if self.api_key:
+    def get_client(self):
+        """Dynamically load or reload client if GEMINI_API_KEY is updated in environment or .env."""
+        from pathlib import Path
+        current_key = os.getenv("GEMINI_API_KEY") or settings.GEMINI_API_KEY
+        if not current_key:
+            for env_path in [settings.BASE_DIR / ".env", settings.BASE_DIR.parent / ".env", Path(".env")]:
+                if env_path.exists():
+                    try:
+                        from dotenv import dotenv_values
+                        env_vals = dotenv_values(str(env_path))
+                        k = env_vals.get("GEMINI_API_KEY", "").strip()
+                        if k:
+                            current_key = k
+                            break
+                    except Exception:
+                        pass
+
+        if current_key and (not self._client or self._last_key != current_key):
             try:
                 from google import genai
-                self._client = genai.Client(api_key=self.api_key)
+                self._client = genai.Client(api_key=current_key)
+                self._last_key = current_key
+                self.api_key = current_key
             except Exception as e:
                 logger.warning(f"Could not initialize Google GenAI Client: {e}")
 
+        return self._client
+
     @property
     def has_active_key(self) -> bool:
-        return bool(self.api_key and self._client)
+        return bool(self.get_client())
 
     @staticmethod
     def wrap_untrusted(content: str, tag: str = "UNTRUSTED_CONTENT") -> str:

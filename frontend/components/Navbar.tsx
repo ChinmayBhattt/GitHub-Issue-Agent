@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { GitPullRequest, FolderGit2, Activity, PlusCircle, Sparkles } from "lucide-react";
+import { GitPullRequest, FolderGit2, Activity, PlusCircle, Sparkles, BookOpen } from "lucide-react";
 import { api, HealthData } from "../services/api";
 
 interface NavbarProps {
@@ -20,7 +20,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenNewIssue }) => {
   }, []);
 
   const navLinks = [
-    { href: "/", label: "Dashboard", icon: Activity },
+    { href: "/dashboard", label: "Dashboard", icon: Activity },
+    { href: "/docs", label: "Documentation", icon: BookOpen },
     { href: "/repos", label: "Repositories", icon: FolderGit2 },
     { href: "/pull-requests", label: "Pull Requests", icon: GitPullRequest },
   ];
@@ -47,7 +48,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenNewIssue }) => {
           <nav className="hidden md:flex items-center space-x-6 text-sm font-sans">
             {navLinks.map((link) => {
               const Icon = link.icon;
-              const isActive = pathname === link.href;
+              const isActive =
+                (link.href === "/dashboard" && (pathname === "/dashboard" || pathname?.startsWith("/jobs/"))) ||
+                (link.href !== "/dashboard" && pathname === link.href);
               return (
                 <Link
                   key={link.href}
@@ -80,7 +83,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenNewIssue }) => {
             </div>
           )}
 
-          {onOpenNewIssue && (
+          {onOpenNewIssue ? (
             <button
               onClick={onOpenNewIssue}
               className="btn-metallic flex items-center space-x-1.5 text-xs font-sans font-medium px-4 py-2 rounded-lg cursor-pointer"
@@ -88,6 +91,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenNewIssue }) => {
               <PlusCircle className="w-3.5 h-3.5" />
               <span>Submit Issue</span>
             </button>
+          ) : (
+            <Link
+              href="/dashboard?start=true"
+              className="btn-metallic flex items-center space-x-1.5 text-xs font-sans font-medium px-4 py-2 rounded-lg cursor-pointer"
+            >
+              <PlusCircle className="w-3.5 h-3.5" />
+              <span>Submit Issue</span>
+            </Link>
           )}
         </div>
       </div>

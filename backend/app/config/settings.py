@@ -8,7 +8,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     """Configuration settings for GitHub Issue Resolution Agent."""
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(".env", "../.env", str(Path(__file__).resolve().parent.parent.parent.parent / ".env")),
         env_file_encoding="utf-8",
         extra="ignore"
     )

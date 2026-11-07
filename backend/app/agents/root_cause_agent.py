@@ -69,6 +69,32 @@ class RootCauseAgent:
             response_schema=RootCauseAnalysis,
         )
 
+        # Validate that culprit files actually exist in the workspace
+        from app.storage.workspace import workspace_manager
+        job_dir = workspace_manager.get_job_dir(job_id)
+
+        valid_culprits = []
+        for cf in analysis.culprit_files:
+            try:
+                p = workspace_manager.validate_file_path(job_id, cf)
+                if p.exists() and p.is_file():
+                    valid_culprits.append(cf)
+            except Exception:
+                pass
+
+        if not valid_culprits:
+            # Fallback to candidate files that exist
+            valid_culprits = [f for f in candidate_files if (job_dir / f).is_file()]
+
+        if not valid_culprits:
+            # Search workspace for actual code files
+            all_files = workspace_manager.list_files(job_id)
+            code_files = [f for f in all_files if f.endswith(('.py', '.ts', '.js', '.jsx', '.tsx', '.go', '.rs'))]
+            valid_culprits = code_files[:2] if code_files else all_files[:1]
+
+        if valid_culprits:
+            analysis.culprit_files = valid_culprits
+
         return analysis
 
 

@@ -1,4 +1,5 @@
 """GitHub API client supporting public repositories, forks, issues, and PR creation."""
+import os
 import re
 from typing import Any, Dict, List, Optional, Tuple
 import httpx
@@ -15,11 +16,42 @@ class GitHubClient:
     """Client for interacting with GitHub REST API via PyGithub and HTTPX."""
 
     def __init__(self, token: Optional[str] = None):
-        self.token = token or settings.GITHUB_TOKEN
-        if self.token:
-            self.gh = Github(auth=Auth.Token(self.token))
-        else:
-            self.gh = Github()
+        self._custom_token = token
+        self._last_token = None
+        self._gh = None
+
+    @property
+    def token(self) -> str:
+        """Dynamically fetch GITHUB_TOKEN from memory, environment, or .env file."""
+        from pathlib import Path
+        if self._custom_token:
+            return self._custom_token
+        current = os.getenv("GITHUB_TOKEN") or settings.GITHUB_TOKEN
+        if not current:
+            for env_path in [settings.BASE_DIR / ".env", settings.BASE_DIR.parent / ".env", Path(".env")]:
+                if env_path.exists():
+                    try:
+                        from dotenv import dotenv_values
+                        vals = dotenv_values(str(env_path))
+                        tok = vals.get("GITHUB_TOKEN", "").strip()
+                        if tok:
+                            current = tok
+                            break
+                    except Exception:
+                        pass
+        return current
+
+    @property
+    def gh(self) -> Github:
+        """Return PyGithub instance, refreshing token if changed."""
+        tok = self.token
+        if not self._gh or self._last_token != tok:
+            if tok:
+                self._gh = Github(auth=Auth.Token(tok))
+            else:
+                self._gh = Github()
+            self._last_token = tok
+        return self._gh
 
     @staticmethod
     def parse_repo_and_issue(input_str: str) -> Dict[str, Any]:
