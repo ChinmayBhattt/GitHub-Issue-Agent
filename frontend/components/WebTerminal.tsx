@@ -45,15 +45,14 @@ export const WebTerminal: React.FC<WebTerminalProps> = ({
   const [historyIdx, setHistoryIdx] = useState<number>(-1);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Configuration Wizard State: "idle" | "awaiting_gemini" | "awaiting_github" | "awaiting_webhook"
+  // Configuration Wizard State: "idle" | "awaiting_gemini" | "awaiting_github"
   const [wizardStep, setWizardStep] = useState<
-    "idle" | "awaiting_gemini" | "awaiting_github" | "awaiting_webhook"
+    "idle" | "awaiting_gemini" | "awaiting_github"
   >("idle");
 
   const [tempKeys, setTempKeys] = useState<{
     gemini?: string;
     github?: string;
-    webhook?: string;
   }>({});
 
   const terminalEndRef = useRef<HTMLDivElement>(null);
@@ -109,7 +108,7 @@ export const WebTerminal: React.FC<WebTerminalProps> = ({
 
         if (!res.gemini_api_key_configured || !res.github_token_configured) {
           addLine("highlight", "👋 Welcome! To get started, we need your API credentials.");
-          addLine("info", "The agent will guide you through 3 simple steps to configure them.");
+          addLine("info", "The agent will guide you through 2 simple steps to configure them.");
           addLine("info", "");
           startWizard();
         } else {
@@ -133,7 +132,7 @@ export const WebTerminal: React.FC<WebTerminalProps> = ({
   const startWizard = () => {
     setWizardStep("awaiting_gemini");
     setTempKeys({});
-    addLine("highlight", "👉 STEP 1/3: Please enter your Google Gemini API Key");
+    addLine("highlight", "👉 STEP 1/2: Please enter your Google Gemini API Key");
     addLine("info", "   • Get a free key at: https://aistudio.google.com");
     addLine("info", "   • Key format: starts with 'AIzaSy...'");
     addLine("prompt", "Enter GEMINI_API_KEY below and press Enter:");
@@ -186,7 +185,7 @@ export const WebTerminal: React.FC<WebTerminalProps> = ({
       setWizardStep("awaiting_github");
       addLine("success", `✓ GEMINI_API_KEY received (${trimmed.slice(0, 6)}••••${trimmed.slice(-4)})`);
       addLine("info", "");
-      addLine("highlight", "👉 STEP 2/3: Please enter your GitHub Personal Access Token (PAT)");
+      addLine("highlight", "👉 STEP 2/2: Please enter your GitHub Personal Access Token (PAT)");
       addLine("info", "   • Generate at: https://github.com/settings/tokens");
       addLine("info", "   • Permissions required: repo (or contents/pull-requests: read & write)");
       addLine("info", "   • Key format: starts with 'ghp_...' or 'github_pat_...'");
@@ -194,33 +193,20 @@ export const WebTerminal: React.FC<WebTerminalProps> = ({
       return;
     }
 
-    // --- WIZARD STEP 2: GITHUB ---
+    // --- WIZARD STEP 2: GITHUB (FINAL STEP - SAVES IMMEDIATELY) ---
     if (wizardStep === "awaiting_github") {
       if (!trimmed) {
         addLine("error", "⚠️ GITHUB_TOKEN cannot be empty! Please paste your GitHub token:");
         return;
       }
-      setTempKeys((prev) => ({ ...prev, github: trimmed }));
-      setWizardStep("awaiting_webhook");
-      addLine("success", `✓ GITHUB_TOKEN received (${trimmed.slice(0, 6)}••••${trimmed.slice(-4)})`);
-      addLine("info", "");
-      addLine("highlight", "👉 STEP 3/3: Enter GITHUB_WEBHOOK_SECRET (Optional)");
-      addLine("info", "   • Used only if you are forwarding webhooks from a GitHub App.");
-      addLine("info", "   • If you are not using webhooks, just press Enter to skip.");
-      addLine("prompt", "Enter GITHUB_WEBHOOK_SECRET (or press Enter to skip):");
-      setIsMasked(false);
-      return;
-    }
 
-    // --- WIZARD STEP 3: WEBHOOK & SAVE ---
-    if (wizardStep === "awaiting_webhook") {
-      const finalWebhook = trimmed || "";
       const finalGemini = tempKeys.gemini;
-      const finalGithub = tempKeys.github;
+      const finalGithub = trimmed;
 
       setWizardStep("idle");
       setIsMasked(false);
 
+      addLine("success", `✓ GITHUB_TOKEN received (${trimmed.slice(0, 6)}••••${trimmed.slice(-4)})`);
       addLine("info", "");
       addLine("info", "[SAVING] Persisting credentials to .env and reloading agents...");
       setIsLoading(true);
@@ -229,7 +215,6 @@ export const WebTerminal: React.FC<WebTerminalProps> = ({
         const res = await api.saveKeysConfig({
           gemini_api_key: finalGemini,
           github_token: finalGithub,
-          github_webhook_secret: finalWebhook,
         });
 
         setKeyConfig(res);
@@ -238,9 +223,6 @@ export const WebTerminal: React.FC<WebTerminalProps> = ({
         addLine("success", "=============================================================");
         addLine("success", `  ✓ GEMINI_API_KEY: Saved & Verified (${res.gemini_api_key_preview || "Active"})`);
         addLine("success", `  ✓ GITHUB_TOKEN: Saved & Connected (${res.github_token_preview || "Active"})`);
-        if (res.github_webhook_secret_configured) {
-          addLine("success", `  ✓ GITHUB_WEBHOOK_SECRET: Configured (${res.github_webhook_secret_preview})`);
-        }
         addLine("success", "  ✓ Gemini 2.5 Flash Client: Reloaded & Ready");
         addLine("success", "  ✓ PyGithub Client: Ready for forks & Pull Requests");
         addLine("success", "=============================================================");
@@ -488,8 +470,6 @@ export const WebTerminal: React.FC<WebTerminalProps> = ({
                   ? "Paste your GEMINI_API_KEY here and press Enter..."
                   : wizardStep === "awaiting_github"
                   ? "Paste your GITHUB_TOKEN here and press Enter..."
-                  : wizardStep === "awaiting_webhook"
-                  ? "Enter GITHUB_WEBHOOK_SECRET (or press Enter to skip)..."
                   : "Type command (e.g. 'status', 'configure', 'help')..."
               }
               className="flex-1 bg-transparent text-[#FAF9F5] outline-none placeholder-[#636159] text-xs font-mono"
