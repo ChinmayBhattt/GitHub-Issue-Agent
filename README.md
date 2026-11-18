@@ -1,7 +1,7 @@
 # Autonomous GitHub Issue Resolution Agent
 
 An autonomous, multi-agent AI coding system that works with **any public GitHub repository** to triage, investigate, patch, test, and open Pull Requests for reported issues.
-
+ 
 Powered by **Google Gemini API** and orchestrated with **LangGraph**.
 
 ---
